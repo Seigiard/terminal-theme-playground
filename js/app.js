@@ -2,6 +2,8 @@
 
 import { createStore } from './store.js';
 import { renderPalettePanel } from './ui/palette-panel.js';
+import { renderTokenEditor } from './ui/token-editor.js';
+import { checkContract } from './contract.js';
 
 const TOOLS = ['claude', 'opencode', 'pi'];
 
@@ -33,6 +35,18 @@ function setupTabs(store) {
   const update = (state) => {
     tabs.forEach((tab) => {
       tab.setAttribute('aria-selected', String(tab.dataset.tab === state.activeTab));
+      const count = checkContract(tab.dataset.tab, state.themes[tab.dataset.tab]).length;
+      let flag = tab.querySelector('.tab-flag');
+      if (count > 0) {
+        if (!flag) {
+          flag = document.createElement('span');
+          flag.className = 'tab-flag';
+          tab.append(flag);
+        }
+        flag.textContent = `⚠ ${count}`;
+      } else if (flag) {
+        flag.remove();
+      }
     });
     panels.forEach((panel) => {
       panel.classList.toggle('active', panel.dataset.panel === state.activeTab);
@@ -55,17 +69,21 @@ async function main() {
   });
   setupTabs(store);
 
-  // Editor (U4) and preview (U5) mount points; placeholders until those land.
+  // Editors per tool; previews (U5) still placeholders.
+  const editors = {};
   for (const tool of TOOLS) {
-    const editor = document.getElementById(`editor-${tool}`);
+    editors[tool] = renderTokenEditor(
+      document.getElementById(`editor-${tool}`),
+      document.getElementById(`json-${tool}`),
+      store,
+      tool,
+    );
     const preview = document.getElementById(`preview-${tool}`);
-    const json = document.getElementById(`json-${tool}`);
-    if (!editor.hasChildNodes()) {
-      editor.innerHTML = '<p class="placeholder">Token editor lands in U4.</p>';
+    if (!preview.hasChildNodes()) {
       preview.innerHTML = '<p class="placeholder">Live preview lands in U5.</p>';
-      json.innerHTML = '<p class="placeholder">Raw JSON view lands in U4.</p>';
     }
   }
+  window.__editors = editors; // preview click-to-token hook (U5)
 }
 
 main().catch((error) => {

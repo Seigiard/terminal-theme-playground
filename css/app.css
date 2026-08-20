@@ -150,3 +150,107 @@ button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
 }
 
 .placeholder { color: var(--chrome-muted); font-style: italic; }
+
+/* ---------- token editor ---------- */
+
+.panel-editor { max-height: 70vh; overflow-y: auto; }
+
+.token-group {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--chrome-muted);
+  margin: 0.9rem 0 0.3rem;
+}
+
+.token-group:first-child { margin-top: 0; }
+
+.token-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.18rem 0.3rem;
+  border-radius: 4px;
+}
+
+.token-row.co-move { background: #eef3fb; }
+.token-row.flash { background: #fdf3d7; transition: background 1.2s; }
+
+.token-name { font-family: var(--mono); font-size: 0.8rem; min-width: 10rem; }
+.token-hint { color: var(--chrome-muted); font-size: 0.75rem; flex: 1; min-width: 8rem; }
+
+.token-control { display: inline-flex; gap: 0.3rem; align-items: center; }
+.token-control select { font: inherit; font-size: 0.78rem; max-width: 11rem; }
+
+.hex-input {
+  width: 5.2rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid var(--chrome-line);
+  border-radius: 3px;
+}
+
+.value-chip {
+  font-size: 0.75rem;
+  background: #f0f0f2;
+  border: 1px dashed var(--chrome-line);
+  border-radius: 3px;
+  padding: 0.05rem 0.35rem;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 0.68rem;
+  border-radius: 99px;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--chrome-line);
+  background: #fafafa;
+  cursor: default;
+}
+
+button.badge { cursor: pointer; }
+
+.via-badge { background: #eef3fb; border-color: #b9cdEE; color: #2d4d8e; }
+.base-badge { color: var(--chrome-muted); }
+.override-badge { background: #eef8ee; border-color: #b6d8b6; color: #256325; }
+.contract-flag { background: var(--flag-bg); border-color: var(--flag-fg); color: var(--flag-fg); }
+.collision-badge { background: var(--flag-bg); border-color: var(--flag-fg); color: var(--flag-fg); }
+
+.row-warning {
+  flex-basis: 100%;
+  margin: 0.1rem 0 0;
+  font-size: 0.75rem;
+  color: #8a5a0a;
+}
+
+.contract-banner {
+  background: var(--flag-bg);
+  color: var(--flag-fg);
+  border-radius: 5px;
+  padding: 0.4rem 0.6rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* ---------- raw JSON ---------- */
+
+.json-area {
+  width: 100%;
+  min-height: 14rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  border: 1px solid var(--chrome-line);
+  border-radius: 5px;
+  padding: 0.5rem;
+  resize: vertical;
+}
+
+.panel-json h3 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+.panel-json button { margin-top: 0.4rem; }
+
+.json-error { color: var(--flag-fg); font-size: 0.8rem; margin: 0.4rem 0 0; }
