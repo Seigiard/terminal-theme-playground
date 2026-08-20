@@ -1,0 +1,152 @@
+/* Page chrome stays neutral and palette-independent (R17); only the preview
+   roots are painted from resolver output via CSS custom properties. */
+
+* { box-sizing: border-box; }
+
+:root {
+  --chrome-bg: #f4f4f5;
+  --chrome-fg: #1c1c1e;
+  --chrome-muted: #6e6e73;
+  --chrome-card: #ffffff;
+  --chrome-line: #d9d9de;
+  --chrome-accent: #3757b8;
+  --flag-bg: #fbe9e9;
+  --flag-fg: #a02020;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body {
+  margin: 0;
+  background: var(--chrome-bg);
+  color: var(--chrome-fg);
+  font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+
+.app-header { padding: 1rem 1.25rem 0.5rem; }
+.app-header h1 { margin: 0; font-size: 1.25rem; }
+.tagline { margin: 0.15rem 0 0; color: var(--chrome-muted); }
+
+.app-main {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1rem;
+  padding: 1rem 1.25rem 2rem;
+  align-items: start;
+}
+
+/* ---------- palette panel ---------- */
+
+.palette-panel {
+  background: var(--chrome-card);
+  border: 1px solid var(--chrome-line);
+  border-radius: 8px;
+  padding: 0.75rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.palette-head {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.palette-head select {
+  flex: 1;
+  padding: 0.25rem;
+  font: inherit;
+}
+
+.palette-name { font-weight: 600; margin: 0 0 0.5rem; font-size: 0.9rem; }
+
+.palette-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.12rem 0;
+}
+
+.palette-row label {
+  width: 6.5rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--chrome-muted);
+}
+
+.palette-row input[type="color"] {
+  width: 1.9rem;
+  height: 1.4rem;
+  padding: 0;
+  border: 1px solid var(--chrome-line);
+  border-radius: 3px;
+  background: none;
+}
+
+.palette-row input[type="text"] {
+  width: 5.2rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.15rem 0.3rem;
+  border: 1px solid var(--chrome-line);
+  border-radius: 3px;
+}
+
+.palette-row input[type="text"].invalid { border-color: var(--flag-fg); }
+
+.collision-flag {
+  font-size: 0.68rem;
+  background: var(--flag-bg);
+  color: var(--flag-fg);
+  border-radius: 99px;
+  padding: 0.05rem 0.4rem;
+  white-space: nowrap;
+}
+
+.palette-actions { margin-top: 0.6rem; display: flex; gap: 0.5rem; }
+
+button {
+  font: inherit;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--chrome-line);
+  border-radius: 5px;
+  background: var(--chrome-card);
+  cursor: pointer;
+}
+
+button:hover { border-color: var(--chrome-accent); }
+
+button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
+
+/* ---------- workspace ---------- */
+
+.workspace { min-width: 0; }
+
+.tabs { display: flex; gap: 0.25rem; margin-bottom: 0.6rem; }
+
+.tab {
+  border-radius: 6px 6px 0 0;
+  border-bottom: 2px solid transparent;
+}
+
+.tab[aria-selected="true"] {
+  border-color: var(--chrome-accent);
+  color: var(--chrome-accent);
+  font-weight: 600;
+}
+
+.tab .tab-flag { color: var(--flag-fg); margin-left: 0.3rem; }
+
+.tab-panel { display: none; gap: 1rem; }
+.tab-panel.active { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+
+.panel-preview { grid-row: 1 / span 2; min-width: 0; }
+.panel-editor, .panel-json {
+  background: var(--chrome-card);
+  border: 1px solid var(--chrome-line);
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-width: 0;
+}
+
+.placeholder { color: var(--chrome-muted); font-style: italic; }
