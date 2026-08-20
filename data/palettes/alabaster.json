@@ -1,0 +1,29 @@
+{
+  "_source": {
+    "path": "home/private_dot_config/kitty/Alabaster.conf",
+    "repo": "my-mac-setup@39ea84c",
+    "vendored": "2026-08-20",
+    "upstream": "https://raw.githubusercontent.com/anmolmathias/kitty-alabaster/master/alabaster.conf (MIT, Nikita Prokopov)"
+  },
+  "name": "Alabaster",
+  "foreground": "#000000",
+  "background": "#f7f7f7",
+  "slots": [
+    "#000000",
+    "#aa3731",
+    "#448c37",
+    "#cb9000",
+    "#325cc0",
+    "#7a3e9d",
+    "#0083b2",
+    "#f7f7f7",
+    "#777777",
+    "#f05050",
+    "#60cb00",
+    "#ffbc5d",
+    "#007acc",
+    "#e64ce6",
+    "#00aacb",
+    "#f7f7f7"
+  ]
+}
