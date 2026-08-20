@@ -3,7 +3,7 @@
 // 256-color index, a reference to a vars entry, or "" for the terminal's
 // default color. vars values are indices or hex.
 
-import { assertPalette, intToColor } from './xterm.js';
+import { assertPalette, intToColor, isHexColor } from './xterm.js';
 
 const isBgToken = (token) => /Bg$/.test(token);
 
@@ -18,7 +18,7 @@ export function resolvePi(themeDoc, palette) {
       return isBgToken(token) ? palette.background : palette.foreground;
     }
     if (Number.isInteger(value)) return intToColor(value, palette);
-    if (typeof value === 'string' && value.startsWith('#')) return value;
+    if (typeof value === 'string' && isHexColor(value)) return value;
     if (typeof value === 'string' && value in vars) {
       return resolveValue(vars[value], token);
     }

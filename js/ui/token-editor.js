@@ -236,6 +236,12 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
               return;
             }
             if (select.value === 'default') {
+              if (info.via) {
+                transientWarning = {
+                  token: key,
+                  message: `Detached from var ${info.via}: terminal default applies per token, the var and its other tokens stay unchanged.`,
+                };
+              }
               applyEdit(store, tool, key, { kind: 'default' });
               return;
             }
@@ -372,7 +378,9 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
 
     if (focusedId) document.getElementById(focusedId)?.focus();
 
-    if (document.activeElement !== jsonArea) {
+    // Preserve the user's draft while it is being edited or was just
+    // rejected — refilling would wipe the text they are trying to fix.
+    if (document.activeElement !== jsonArea && jsonError.hidden) {
       jsonArea.value = JSON.stringify(doc, null, 2);
     }
   };

@@ -85,17 +85,27 @@ export function setOpencodeToken(doc, token, edit) {
 
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 
+// The xterm 256-color space bounds every integer color value; resolvers
+// would throw on anything outside it, so validation rejects it up front.
+const isColorIndex = (v) => Number.isInteger(v) && v >= 0 && v <= 255;
+
 const VALIDATORS = {
   pi(doc) {
     if (!isObject(doc)) return 'document must be a JSON object';
     if (!isObject(doc.vars)) return 'pi theme needs a "vars" object';
     if (!isObject(doc.colors)) return 'pi theme needs a "colors" object';
     for (const [name, value] of Object.entries(doc.vars)) {
+      if (Number.isInteger(value) && !isColorIndex(value)) {
+        return `vars.${name} index ${value} is outside 0-255`;
+      }
       if (!Number.isInteger(value) && typeof value !== 'string') {
         return `vars.${name} must be an index or a color string`;
       }
     }
     for (const [token, value] of Object.entries(doc.colors)) {
+      if (Number.isInteger(value) && !isColorIndex(value)) {
+        return `colors.${token} index ${value} is outside 0-255`;
+      }
       if (!Number.isInteger(value) && typeof value !== 'string') {
         return `colors.${token} must be an index, a var reference, hex, or ""`;
       }
@@ -118,7 +128,7 @@ const VALIDATORS = {
     // Variant sides are leaves (hex or ref string, or an int) — opencode's own
     // type requires both sides and forbids nesting, and a nested variant would
     // recurse unboundedly through the contract checker.
-    const isLeaf = (v) => Number.isInteger(v) || typeof v === 'string';
+    const isLeaf = (v) => isColorIndex(v) || typeof v === 'string';
     for (const [token, value] of Object.entries(doc.theme)) {
       if (token === 'thinkingOpacity') {
         if (typeof value !== 'number') return 'thinkingOpacity must be a number';
@@ -129,9 +139,12 @@ const VALIDATORS = {
           return `theme.${token} variant must carry both "dark" and "light"`;
         }
         if (!isLeaf(value.dark) || !isLeaf(value.light)) {
-          return `theme.${token} variant sides must be plain values, not nested objects`;
+          return `theme.${token} variant sides must be plain values 0-255 or strings, not nested objects`;
         }
         continue;
+      }
+      if (Number.isInteger(value) && !isColorIndex(value)) {
+        return `theme.${token} index ${value} is outside 0-255`;
       }
       if (!Number.isInteger(value) && typeof value !== 'string') {
         return `theme.${token} must be an int, string, or {dark, light} object`;

@@ -3,7 +3,7 @@
 // Resolution layers base values under overrides (an override wins per token).
 
 import { ANSI_SLOTS, ALL_KEYS, BASES } from '../../data/tokens/claude.js';
-import { assertPalette, intToColor } from './xterm.js';
+import { assertPalette, intToColor, isHexColor, isRgbColor } from './xterm.js';
 
 export function resolveClaude(themeDoc, palette) {
   assertPalette(palette);
@@ -28,7 +28,7 @@ export function resolveClaude(themeDoc, palette) {
     }
     const ansi256 = value.match(/^ansi256\((\d+)\)$/);
     if (ansi256) return intToColor(Number(ansi256[1]), palette);
-    if (value.startsWith('#') || /^rgb\(/.test(value)) return value;
+    if (isHexColor(value) || isRgbColor(value)) return value;
     warnings.push(`token "${token}": unrecognized value "${value}"`);
     return palette.foreground;
   };

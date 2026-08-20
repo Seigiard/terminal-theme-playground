@@ -115,6 +115,16 @@ test('opencode: one-sided and nested variants are rejected with precise errors',
   assert.match(r2.error, /nested/);
 });
 
+test('integer color values outside 0-255 are rejected at validation time', () => {
+  const pi = structuredClone(piSeed);
+  pi.colors.accent = 300;
+  assert.match(validateThemeDoc('pi', pi).error, /outside 0-255/);
+
+  const oc = structuredClone(opencodeSeed);
+  oc.theme.primary = -1;
+  assert.match(validateThemeDoc('opencode', oc).error, /outside 0-255/);
+});
+
 test('valid docs pass validation, including out-of-select values (R9)', () => {
   assert.equal(validateThemeDoc('pi', piSeed).ok, true);
   assert.equal(validateThemeDoc('claude', claudeSeed).ok, true);

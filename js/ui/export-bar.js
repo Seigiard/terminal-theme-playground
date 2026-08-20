@@ -73,6 +73,10 @@ export function renderExportBar(container, store, tool) {
   confirmBtn.addEventListener('click', () => { armWarning(false); doCopy(); });
   cancelBtn.addEventListener('click', () => armWarning(false));
 
+  // A doc or palette change invalidates an armed warning — its violation
+  // count no longer describes the current doc.
+  store.subscribe(() => armWarning(false));
+
   bar.append(copyBtn, warning, confirmBtn, cancelBtn, status);
   container.append(bar, fallback);
 }

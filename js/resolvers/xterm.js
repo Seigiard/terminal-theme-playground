@@ -45,3 +45,9 @@ export function intToColor(n, palette) {
   if (n >= 0 && n <= 15) return palette.slots[n];
   return xterm256ToHex(n);
 }
+
+// Full-match color literals. Prefix tests are not enough: values land in CSS
+// custom properties, and a passthrough like "rgb(0,0,0) url(https://x)" would
+// smuggle extra CSS (an external request) into the preview.
+export const isHexColor = (v) => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v);
+export const isRgbColor = (v) => /^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/.test(v);

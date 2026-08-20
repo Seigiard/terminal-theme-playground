@@ -97,6 +97,10 @@ export function renderPalettePanel(container, store, { presets }) {
   container.append(actions);
 
   const update = (state) => {
+    // Any state change disarms a pending reset confirmation — the user's
+    // attention has moved on, and a stale armed Confirm invites an
+    // accidental destructive reset.
+    armReset(false);
     const { palette } = state;
     title.textContent = palette.name;
     const collisions = computeCollisions(palette);

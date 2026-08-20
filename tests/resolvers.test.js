@@ -159,6 +159,31 @@ test('opencode: circular reference is an explicit error', () => {
   assert.throws(() => resolveOpencode(doc, palette), /[Cc]ircular/);
 });
 
+test('opencode: omitted optional keys fall back per the real resolveTheme', () => {
+  const theme = { ...opencodeSeed.theme };
+  delete theme.selectedListItemText;
+  delete theme.backgroundMenu;
+  const { colors } = resolveOpencode({ theme }, palette);
+  assert.equal(colors.selectedListItemText, colors.background);
+  assert.equal(colors.backgroundMenu, colors.backgroundElement);
+});
+
+test('color literals with trailing CSS are rejected, not passed into custom properties', () => {
+  const claudeDoc = {
+    name: 't', base: 'light-ansi',
+    overrides: { claude: 'rgb(1,2,3) url(https://evil.example)', ide: '#123456 url(x)' },
+  };
+  const { colors, warnings } = resolveClaude(claudeDoc, palette);
+  assert.equal(colors.claude, palette.foreground);
+  assert.equal(colors.ide, palette.foreground);
+  assert.equal(warnings.length, 2);
+
+  const piDoc = { name: 't', vars: {}, colors: { accent: '#ff0000;background:url(x)' } };
+  const pi = resolvePi(piDoc, palette);
+  assert.equal(pi.colors.accent, palette.foreground);
+  assert.ok(pi.warnings.length > 0);
+});
+
 test('opencode: the vendored seed resolves every token', () => {
   const { colors, warnings } = resolveOpencode(opencodeSeed, palette);
   for (const key of OPENCODE_KEYS) {

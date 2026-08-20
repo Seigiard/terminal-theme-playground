@@ -9,7 +9,7 @@
 // hardcoded standard-16 table (ansiToRgba); the playground maps 0-15 through
 // the live palette because previewing under a palette is the whole point (R14).
 
-import { assertPalette, intToColor } from './xterm.js';
+import { assertPalette, intToColor, isHexColor } from './xterm.js';
 
 export function resolveOpencode(themeDoc, palette, mode = 'light') {
   assertPalette(palette);
@@ -22,7 +22,7 @@ export function resolveOpencode(themeDoc, palette, mode = 'light') {
     if (Number.isInteger(value)) return intToColor(value, palette);
     if (typeof value === 'string') {
       if (value === 'none' || value === 'transparent') return 'transparent';
-      if (value.startsWith('#')) return value;
+      if (isHexColor(value)) return value;
       if (chain.includes(value)) {
         throw new Error(`circular color reference: ${[...chain, value].join(' -> ')}`);
       }
@@ -42,6 +42,15 @@ export function resolveOpencode(themeDoc, palette, mode = 'light') {
 
   for (const [token, value] of Object.entries(theme)) {
     colors[token] = resolveValue(value, token, [token]);
+  }
+  // Documented optional-key fallbacks from opencode's resolveTheme:
+  // selectedListItemText falls back to background, backgroundMenu to
+  // backgroundElement, when the doc omits them.
+  if (!('selectedListItemText' in theme) && 'background' in colors) {
+    colors.selectedListItemText = colors.background;
+  }
+  if (!('backgroundMenu' in theme) && 'backgroundElement' in colors) {
+    colors.backgroundMenu = colors.backgroundElement;
   }
   return { colors, warnings };
 }

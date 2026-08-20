@@ -35,6 +35,20 @@ const RULES = {
       },
     },
     {
+      // Deliberately stronger than the bats parity set: a literal xterm cube
+      // index in colors bakes a palette-independent color just like hex does.
+      id: 'pi-colors-slot-index',
+      description: 'a literal integer in colors is an ANSI palette index 0-15',
+      check(doc) {
+        return Object.entries(doc.colors ?? {})
+          .filter(([, value]) => Number.isInteger(value) && !isSlotIndex(value))
+          .map(([token, value]) => ({
+            token,
+            message: `colors.${token} uses xterm index ${value}, outside the terminal palette 0-15`,
+          }));
+      },
+    },
+    {
       id: 'pi-terminal-default-text',
       description: 'colors.text and colors.userMessageBg stay "" (terminal default)',
       check(doc) {

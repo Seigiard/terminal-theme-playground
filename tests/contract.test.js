@@ -31,6 +31,15 @@ test('pi: non-empty colors.text or colors.userMessageBg is a violation', () => {
   assert.ok(violations.some((v) => v.token === 'userMessageBg'));
 });
 
+test('pi: a literal xterm cube index in colors is a violation, a slot index is not', () => {
+  const doc = structuredClone(piSeed);
+  doc.colors.accent = 240;
+  doc.colors.border = 4;
+  const violations = checkContract('pi', doc);
+  assert.ok(violations.some((v) => v.token === 'accent'));
+  assert.ok(!violations.some((v) => v.token === 'border'));
+});
+
 test('pi: a vars value outside 0-15 is a violation', () => {
   const doc = structuredClone(piSeed);
   doc.vars.gray = 240;
