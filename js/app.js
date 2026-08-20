@@ -4,6 +4,21 @@ import { createStore } from './store.js';
 import { renderPalettePanel } from './ui/palette-panel.js';
 import { renderTokenEditor } from './ui/token-editor.js';
 import { checkContract } from './contract.js';
+import { skinPreview, wireClicks } from './ui/previews/common.js';
+import { buildPiMock } from './ui/previews/pi.js';
+import { buildClaudeMock } from './ui/previews/claude.js';
+import { buildOpencodeMock } from './ui/previews/opencode.js';
+import { resolvePi } from './resolvers/pi.js';
+import { resolveClaude } from './resolvers/claude.js';
+import { resolveOpencode } from './resolvers/opencode.js';
+
+const MOCKS = { pi: buildPiMock, claude: buildClaudeMock, opencode: buildOpencodeMock };
+
+const RESOLVERS = {
+  pi: (state) => resolvePi(state.themes.pi, state.palette),
+  claude: (state) => resolveClaude(state.themes.claude, state.palette),
+  opencode: (state) => resolveOpencode(state.themes.opencode, state.palette, state.opencodeMode),
+};
 
 const TOOLS = ['claude', 'opencode', 'pi'];
 
@@ -69,7 +84,7 @@ async function main() {
   });
   setupTabs(store);
 
-  // Editors per tool; previews (U5) still placeholders.
+  // Editors and mock previews per tool.
   const editors = {};
   for (const tool of TOOLS) {
     editors[tool] = renderTokenEditor(
@@ -78,12 +93,32 @@ async function main() {
       store,
       tool,
     );
-    const preview = document.getElementById(`preview-${tool}`);
-    if (!preview.hasChildNodes()) {
-      preview.innerHTML = '<p class="placeholder">Live preview lands in U5.</p>';
-    }
+
+    const container = document.getElementById(`preview-${tool}`);
+    const mock = MOCKS[tool]();
+    container.append(mock);
+    wireClicks(mock, (tokens) => {
+      editors[tool].focusToken(tokens[0]);
+      tokens.slice(1).forEach((token) => {
+        document.getElementById(`row-${tool}-${token}`)?.classList.add('flash');
+        setTimeout(() => {
+          document.getElementById(`row-${tool}-${token}`)?.classList.remove('flash');
+        }, 1600);
+      });
+    });
+
+    const reskin = (state) => {
+      try {
+        skinPreview(mock, RESOLVERS[tool](state).colors, state.palette);
+        mock.classList.remove('mock-broken');
+      } catch {
+        // An unresolvable doc (mid-edit) keeps the last good skin, dimmed.
+        mock.classList.add('mock-broken');
+      }
+    };
+    store.subscribe(reskin);
+    reskin(store.getState());
   }
-  window.__editors = editors; // preview click-to-token hook (U5)
 }
 
 main().catch((error) => {
