@@ -14,33 +14,44 @@
   </header>
 
   <main class="app-main">
-    <aside id="palette-panel" class="palette-panel" aria-label="Terminal palette"></aside>
+    <nav class="tabs" role="tablist" aria-label="Tools">
+      <button class="tab" role="tab" data-tab="claude">Claude Code</button>
+      <button class="tab" role="tab" data-tab="opencode">opencode</button>
+      <button class="tab" role="tab" data-tab="pi">pi</button>
+    </nav>
 
-    <section class="workspace">
-      <nav class="tabs" role="tablist" aria-label="Tools">
-        <button class="tab" role="tab" data-tab="claude">Claude Code</button>
-        <button class="tab" role="tab" data-tab="opencode">opencode</button>
-        <button class="tab" role="tab" data-tab="pi">pi</button>
-      </nav>
+    <!-- Both zones carry .tab-panel[data-panel] so one tab switch toggles
+         the tool's preview and its settings together. -->
+    <div class="preview-zone">
+      <section class="tab-panel" data-panel="claude" role="tabpanel">
+        <div class="panel-preview" id="preview-claude"></div>
+      </section>
+      <section class="tab-panel" data-panel="opencode" role="tabpanel">
+        <div class="panel-preview" id="preview-opencode"></div>
+      </section>
+      <section class="tab-panel" data-panel="pi" role="tabpanel">
+        <div class="panel-preview" id="preview-pi"></div>
+      </section>
+    </div>
 
-      <div class="tab-panels">
-        <section class="tab-panel" data-panel="claude" role="tabpanel">
-          <div class="panel-preview" id="preview-claude"></div>
+    <div class="settings-zone">
+      <aside id="palette-panel" class="palette-panel" aria-label="Terminal palette"></aside>
+
+      <div class="settings-panels">
+        <section class="tab-panel panel-settings" data-panel="claude" role="tabpanel">
           <div class="panel-editor" id="editor-claude"></div>
           <div class="panel-json" id="json-claude"></div>
         </section>
-        <section class="tab-panel" data-panel="opencode" role="tabpanel">
-          <div class="panel-preview" id="preview-opencode"></div>
+        <section class="tab-panel panel-settings" data-panel="opencode" role="tabpanel">
           <div class="panel-editor" id="editor-opencode"></div>
           <div class="panel-json" id="json-opencode"></div>
         </section>
-        <section class="tab-panel" data-panel="pi" role="tabpanel">
-          <div class="panel-preview" id="preview-pi"></div>
+        <section class="tab-panel panel-settings" data-panel="pi" role="tabpanel">
           <div class="panel-editor" id="editor-pi"></div>
           <div class="panel-json" id="json-pi"></div>
         </section>
       </div>
-    </section>
+    </div>
   </main>
 
   <script type="module" src="js/app.js"></script>

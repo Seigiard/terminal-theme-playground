@@ -1,15 +1,19 @@
 /* Page chrome stays neutral and palette-independent (R17); only the preview
-   roots are painted from resolver output via CSS custom properties. */
+   roots are painted from resolver output via CSS custom properties.
+   Chrome look is terminal-css-inspired: monospace everywhere, square corners,
+   1px ink borders, hover-invert buttons. */
 
 * { box-sizing: border-box; }
 
 :root {
-  --chrome-bg: #f4f4f5;
-  --chrome-fg: #1c1c1e;
-  --chrome-muted: #6e6e73;
+  --chrome-bg: #ffffff;
+  --chrome-fg: #151515;
+  --chrome-muted: #727578;
   --chrome-card: #ffffff;
-  --chrome-line: #d9d9de;
-  --chrome-accent: #3757b8;
+  --chrome-line: #151515;
+  --chrome-line-soft: #dcdcdc;
+  --chrome-accent: #1a95e0;
+  --chrome-accent-tint: #e6f3fb;
   --flag-bg: #fbe9e9;
   --flag-fg: #a02020;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -19,19 +23,79 @@ body {
   margin: 0;
   background: var(--chrome-bg);
   color: var(--chrome-fg);
-  font: 14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+  font: 14px/1.6 var(--mono);
 }
 
-.app-header { padding: 1rem 1.25rem 0.5rem; }
-.app-header h1 { margin: 0; font-size: 1.25rem; }
+.app-header { padding: 1.1rem 1.25rem 0; }
+
+.app-header h1 { margin: 0; font-size: 1.15rem; }
+.app-header h1::before { content: "> "; color: var(--chrome-accent); }
+
 .tagline { margin: 0.15rem 0 0; color: var(--chrome-muted); }
 
 .app-main {
-  display: grid;
-  grid-template-columns: 300px 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   padding: 1rem 1.25rem 2rem;
+}
+
+/* ---------- buttons ---------- */
+
+button {
+  font: inherit;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--chrome-fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--chrome-fg);
+  cursor: pointer;
+}
+
+button:hover { background: var(--chrome-fg); color: var(--chrome-bg); }
+
+button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
+button.danger:hover { background: var(--flag-fg); color: #fff; }
+
+/* ---------- tabs ---------- */
+
+.tabs { display: flex; gap: 0.5rem; }
+
+.tab[aria-selected="true"] {
+  background: var(--chrome-fg);
+  color: var(--chrome-bg);
+}
+
+.tab .tab-flag { color: var(--flag-fg); margin-left: 0.4rem; }
+.tab[aria-selected="true"] .tab-flag { color: #ffb4b4; }
+
+/* ---------- layout zones ---------- */
+
+.preview-zone .tab-panel { display: none; }
+.preview-zone .tab-panel.active { display: block; }
+
+.panel-preview { max-width: 62rem; }
+
+.settings-zone {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 1rem;
   align-items: start;
+}
+
+.settings-panels { min-width: 0; }
+.settings-panels .tab-panel { display: none; }
+.settings-panels .tab-panel.active {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .settings-zone { grid-template-columns: 1fr; }
+  .settings-panels .tab-panel.active { grid-template-columns: 1fr; }
+  .palette-panel { position: static; }
 }
 
 /* ---------- palette panel ---------- */
@@ -39,7 +103,6 @@ body {
 .palette-panel {
   background: var(--chrome-card);
   border: 1px solid var(--chrome-line);
-  border-radius: 8px;
   padding: 0.75rem;
   position: sticky;
   top: 1rem;
@@ -56,6 +119,9 @@ body {
   flex: 1;
   padding: 0.25rem;
   font: inherit;
+  border: 1px solid var(--chrome-fg);
+  border-radius: 0;
+  background: var(--chrome-bg);
 }
 
 .palette-name { font-weight: 600; margin: 0 0 0.5rem; font-size: 0.9rem; }
@@ -69,7 +135,6 @@ body {
 
 .palette-row label {
   width: 6.5rem;
-  font-family: var(--mono);
   font-size: 0.78rem;
   color: var(--chrome-muted);
 }
@@ -79,18 +144,20 @@ body {
   height: 1.4rem;
   padding: 0;
   border: 1px solid var(--chrome-line);
-  border-radius: 3px;
+  border-radius: 0;
   background: none;
 }
 
 .palette-row input[type="text"] {
   width: 5.2rem;
-  font-family: var(--mono);
+  font: inherit;
   font-size: 0.78rem;
   padding: 0.15rem 0.3rem;
-  border: 1px solid var(--chrome-line);
-  border-radius: 3px;
+  border: 1px solid var(--chrome-line-soft);
+  border-radius: 0;
 }
+
+.palette-row input[type="text"]:focus { border-color: var(--chrome-fg); outline: none; }
 
 .palette-row input[type="text"].invalid { border-color: var(--flag-fg); }
 
@@ -98,53 +165,18 @@ body {
   font-size: 0.68rem;
   background: var(--flag-bg);
   color: var(--flag-fg);
-  border-radius: 99px;
-  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--flag-fg);
+  padding: 0 0.35rem;
   white-space: nowrap;
 }
 
 .palette-actions { margin-top: 0.6rem; display: flex; gap: 0.5rem; }
 
-button {
-  font: inherit;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid var(--chrome-line);
-  border-radius: 5px;
-  background: var(--chrome-card);
-  cursor: pointer;
-}
+/* ---------- panels ---------- */
 
-button:hover { border-color: var(--chrome-accent); }
-
-button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
-
-/* ---------- workspace ---------- */
-
-.workspace { min-width: 0; }
-
-.tabs { display: flex; gap: 0.25rem; margin-bottom: 0.6rem; }
-
-.tab {
-  border-radius: 6px 6px 0 0;
-  border-bottom: 2px solid transparent;
-}
-
-.tab[aria-selected="true"] {
-  border-color: var(--chrome-accent);
-  color: var(--chrome-accent);
-  font-weight: 600;
-}
-
-.tab .tab-flag { color: var(--flag-fg); margin-left: 0.3rem; }
-
-.tab-panel { display: none; gap: 1rem; }
-.tab-panel.active { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
-
-.panel-preview { grid-row: 1 / span 2; min-width: 0; }
 .panel-editor, .panel-json {
   background: var(--chrome-card);
   border: 1px solid var(--chrome-line);
-  border-radius: 8px;
   padding: 0.75rem;
   min-width: 0;
 }
@@ -156,11 +188,14 @@ button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
 .panel-editor { max-height: 70vh; overflow-y: auto; }
 
 .token-group {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  font-weight: 700;
   color: var(--chrome-muted);
-  margin: 0.9rem 0 0.3rem;
+  margin: 1rem 0 0.3rem;
+  border-bottom: 1px solid var(--chrome-line-soft);
+  padding-bottom: 0.15rem;
 }
 
 .token-group:first-child { margin-top: 0; }
@@ -171,32 +206,37 @@ button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
   flex-wrap: wrap;
   gap: 0.4rem;
   padding: 0.18rem 0.3rem;
-  border-radius: 4px;
 }
 
-.token-row.co-move { background: #eef3fb; }
+.token-row.co-move { background: var(--chrome-accent-tint); }
 .token-row.flash { background: #fdf3d7; transition: background 1.2s; }
 
-.token-name { font-family: var(--mono); font-size: 0.8rem; min-width: 10rem; }
+.token-name { font-size: 0.8rem; min-width: 10rem; }
 .token-hint { color: var(--chrome-muted); font-size: 0.75rem; flex: 1; min-width: 8rem; }
 
 .token-control { display: inline-flex; gap: 0.3rem; align-items: center; }
-.token-control select { font: inherit; font-size: 0.78rem; max-width: 11rem; }
+.token-control select {
+  font: inherit;
+  font-size: 0.78rem;
+  max-width: 11rem;
+  border: 1px solid var(--chrome-line-soft);
+  border-radius: 0;
+  background: var(--chrome-bg);
+}
 
 .hex-input {
   width: 5.2rem;
-  font-family: var(--mono);
+  font: inherit;
   font-size: 0.78rem;
   padding: 0.1rem 0.3rem;
-  border: 1px solid var(--chrome-line);
-  border-radius: 3px;
+  border: 1px solid var(--chrome-line-soft);
+  border-radius: 0;
 }
 
 .value-chip {
   font-size: 0.75rem;
-  background: #f0f0f2;
-  border: 1px dashed var(--chrome-line);
-  border-radius: 3px;
+  background: #f4f4f4;
+  border: 1px dashed var(--chrome-line-soft);
   padding: 0.05rem 0.35rem;
   max-width: 14rem;
   overflow: hidden;
@@ -206,16 +246,18 @@ button.danger { color: var(--flag-fg); border-color: var(--flag-fg); }
 
 .badge {
   font-size: 0.68rem;
-  border-radius: 99px;
-  padding: 0.05rem 0.45rem;
-  border: 1px solid var(--chrome-line);
+  border: 1px solid var(--chrome-line-soft);
+  border-radius: 0;
+  padding: 0 0.4rem;
   background: #fafafa;
+  color: var(--chrome-fg);
   cursor: default;
 }
 
 button.badge { cursor: pointer; }
+button.badge:hover { background: var(--chrome-fg); color: var(--chrome-bg); }
 
-.via-badge { background: #eef3fb; border-color: #b9cdEE; color: #2d4d8e; }
+.via-badge { background: var(--chrome-accent-tint); border-color: #9fd0ee; color: #10608e; }
 .base-badge { color: var(--chrome-muted); }
 .override-badge { background: #eef8ee; border-color: #b6d8b6; color: #256325; }
 .contract-flag { background: var(--flag-bg); border-color: var(--flag-fg); color: var(--flag-fg); }
@@ -231,7 +273,7 @@ button.badge { cursor: pointer; }
 .contract-banner {
   background: var(--flag-bg);
   color: var(--flag-fg);
-  border-radius: 5px;
+  border: 1px solid var(--flag-fg);
   padding: 0.4rem 0.6rem;
   margin: 0 0 0.5rem;
   font-size: 0.8rem;
@@ -242,15 +284,17 @@ button.badge { cursor: pointer; }
 .json-area {
   width: 100%;
   min-height: 14rem;
-  font-family: var(--mono);
+  font: inherit;
   font-size: 0.75rem;
-  border: 1px solid var(--chrome-line);
-  border-radius: 5px;
+  border: 1px solid var(--chrome-line-soft);
+  border-radius: 0;
   padding: 0.5rem;
   resize: vertical;
 }
 
-.panel-json h3 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+.json-area:focus { border-color: var(--chrome-fg); outline: none; }
+
+.panel-json h3 { margin: 0 0 0.4rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .panel-json button { margin-top: 0.4rem; }
 
 .json-error { color: var(--flag-fg); font-size: 0.8rem; margin: 0.4rem 0 0; }
@@ -264,7 +308,7 @@ button.badge { cursor: pointer; }
   flex-wrap: wrap;
   margin-top: 0.6rem;
   padding-top: 0.6rem;
-  border-top: 1px solid var(--chrome-line);
+  border-top: 1px solid var(--chrome-line-soft);
 }
 
 .export-warning { color: var(--flag-fg); font-size: 0.8rem; }
@@ -272,7 +316,8 @@ button.badge { cursor: pointer; }
 
 /* ---------- mock previews ---------- */
 /* Everything inside .mock-terminal paints from --t-* variables set by the
-   resolver skin — palette bg/fg first (R17); page chrome stays out of it. */
+   resolver skin — palette bg/fg first (R17); page chrome stays out of it.
+   TUI boxes are square in real terminals, so no radii here either. */
 
 .mock-terminal {
   background: var(--t-terminal-bg, #000);
@@ -280,7 +325,6 @@ button.badge { cursor: pointer; }
   font-family: var(--mono);
   font-size: 0.78rem;
   line-height: 1.5;
-  border-radius: 8px;
   border: 1px solid var(--chrome-line);
   padding: 0.8rem 0.9rem;
   overflow-x: auto;
@@ -293,14 +337,13 @@ button.badge { cursor: pointer; }
 
 /* Inner surface for themes with their own background token: fills the
    terminal frame so a transparent value reveals the terminal bg, not chrome. */
-.mock-surface { margin: -0.8rem -0.9rem; padding: 0.8rem 0.9rem; border-radius: 8px; }
+.mock-surface { margin: -0.8rem -0.9rem; padding: 0.8rem 0.9rem; }
 
 .mock-line { margin: 0.15rem 0; }
 
 .mock-msg {
   margin: 0.35rem 0;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
   border: 1px solid transparent;
 }
 
@@ -309,7 +352,6 @@ button.badge { cursor: pointer; }
   padding: 0.2rem 0.5rem;
   border: 1px solid transparent;
   border-left-width: 3px;
-  border-radius: 4px;
 }
 
 .mock-tool-title { font-weight: 600; }
@@ -319,7 +361,6 @@ button.badge { cursor: pointer; }
   margin: 0.35rem 0;
   padding: 0.25rem 0.5rem;
   border: 1px solid transparent;
-  border-radius: 4px;
   white-space: pre;
 }
 
@@ -343,15 +384,14 @@ button.badge { cursor: pointer; }
   border-top: 1px solid transparent;
 }
 
-.mock-selected { border-radius: 3px; padding: 0 0.25rem; }
+.mock-selected { padding: 0 0.25rem; }
 
 .mock-perm, .mock-prompt {
   margin: 0.3rem 0;
   padding: 0.25rem 0.5rem;
   border: 1px solid transparent;
-  border-radius: 4px;
 }
 
 .mock-rate { display: flex; align-items: center; gap: 0; margin: 0.3rem 0; }
-.mock-rate-fill { display: inline-block; width: 4rem; height: 0.45rem; border-radius: 3px 0 0 3px; }
-.mock-rate-empty { display: inline-block; width: 2.2rem; height: 0.45rem; border-radius: 0 3px 3px 0; margin-right: 0.4rem; }
+.mock-rate-fill { display: inline-block; width: 4rem; height: 0.45rem; }
+.mock-rate-empty { display: inline-block; width: 2.2rem; height: 0.45rem; margin-right: 0.4rem; }
