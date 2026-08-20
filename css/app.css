@@ -255,6 +255,21 @@ button.badge { cursor: pointer; }
 
 .json-error { color: var(--flag-fg); font-size: 0.8rem; margin: 0.4rem 0 0; }
 
+/* ---------- export bar ---------- */
+
+.export-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--chrome-line);
+}
+
+.export-warning { color: var(--flag-fg); font-size: 0.8rem; }
+.export-status { color: #256325; font-size: 0.8rem; }
+
 /* ---------- mock previews ---------- */
 /* Everything inside .mock-terminal paints from --t-* variables set by the
    resolver skin — palette bg/fg first (R17); page chrome stays out of it. */

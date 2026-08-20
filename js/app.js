@@ -4,6 +4,7 @@ import { createStore } from './store.js';
 import { renderPalettePanel } from './ui/palette-panel.js';
 import { renderTokenEditor } from './ui/token-editor.js';
 import { checkContract } from './contract.js';
+import { renderExportBar } from './ui/export-bar.js';
 import { skinPreview, wireClicks } from './ui/previews/common.js';
 import { buildPiMock } from './ui/previews/pi.js';
 import { buildClaudeMock } from './ui/previews/claude.js';
@@ -93,6 +94,8 @@ async function main() {
       store,
       tool,
     );
+
+    renderExportBar(document.getElementById(`json-${tool}`), store, tool);
 
     const container = document.getElementById(`preview-${tool}`);
     const mock = MOCKS[tool]();
