@@ -291,6 +291,10 @@ button.badge { cursor: pointer; }
 
 .mock-broken { opacity: 0.45; }
 
+/* Inner surface for themes with their own background token: fills the
+   terminal frame so a transparent value reveals the terminal bg, not chrome. */
+.mock-surface { margin: -0.8rem -0.9rem; padding: 0.8rem 0.9rem; border-radius: 8px; }
+
 .mock-line { margin: 0.15rem 0; }
 
 .mock-msg {

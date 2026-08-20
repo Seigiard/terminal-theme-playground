@@ -147,6 +147,13 @@ test('opencode: {dark, light} variant survives load and resolves by declared mod
   assert.equal(resolveOpencode(doc, palette, 'dark').colors.primary, '#111111');
 });
 
+test('opencode: an unknown reference warns and falls back to foreground', () => {
+  const doc = { theme: { ...opencodeSeed.theme, primary: 'nosuchref' } };
+  const { colors, warnings } = resolveOpencode(doc, palette);
+  assert.equal(colors.primary, palette.foreground);
+  assert.ok(warnings.some((w) => w.includes('nosuchref')));
+});
+
 test('opencode: circular reference is an explicit error', () => {
   const doc = { theme: { ...opencodeSeed.theme, primary: 'accent', accent: 'primary' } };
   assert.throws(() => resolveOpencode(doc, palette), /[Cc]ircular/);

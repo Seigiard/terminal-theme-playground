@@ -61,6 +61,16 @@ test('opencode: a hex or out-of-range int theme value is a violation', () => {
   assert.ok(violations.some((v) => v.token === 'accent'));
 });
 
+test('opencode: a {dark, light} variant of slots passes; a variant containing hex fails', () => {
+  const clean = structuredClone(opencodeSeed);
+  clean.theme.primary = { dark: 6, light: 4 };
+  assert.deepEqual(checkContract('opencode', clean), []);
+
+  const baked = structuredClone(opencodeSeed);
+  baked.theme.primary = { dark: '#112233', light: 4 };
+  assert.ok(checkContract('opencode', baked).some((v) => v.token === 'primary'));
+});
+
 test('all three vendored seeds carry zero violations', () => {
   assert.deepEqual(checkContract('pi', piSeed), []);
   assert.deepEqual(checkContract('claude', claudeSeed), []);

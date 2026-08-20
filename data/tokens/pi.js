@@ -83,7 +83,3 @@ export const SCHEMA = [
 ];
 
 export const ALL_KEYS = SCHEMA.flatMap((g) => g.keys.map((k) => k.key));
-
-export const HINTS = Object.fromEntries(
-  SCHEMA.flatMap((g) => g.keys.map((k) => [k.key, k.hint])),
-);

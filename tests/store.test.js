@@ -36,6 +36,31 @@ test('corrupted stored JSON falls back to seeds instead of crashing', () => {
   assert.equal(store.getState().palette.slots[7], seeds.palettes.alabaster.slots[7]);
 });
 
+test('valid JSON with a drifted shape falls back to seeds instead of crash-looping', () => {
+  const storage = fakeStorage({ [STORAGE_KEY]: '{"palette":{},"themes":{}}' });
+  const store = createStore({ seeds, storage });
+  assert.deepEqual(store.getState().palette.slots, seeds.palettes.alabaster.slots);
+  assert.deepEqual(store.getState().themes.pi, seeds.themes.pi);
+});
+
+test('a throwing storage or subscriber does not break mutations', () => {
+  const storage = fakeStorage();
+  storage.setItem = () => { throw new Error('quota exceeded'); };
+  const store = createStore({ seeds, storage });
+  let notified = 0;
+  store.subscribe(() => { throw new Error('bad subscriber'); });
+  store.subscribe(() => { notified += 1; });
+  store.setPaletteColor(3, '#123123');
+  assert.equal(store.getState().palette.slots[3], '#123123');
+  assert.equal(notified, 1); // the later subscriber still ran
+});
+
+test('setActiveTab does not mark the state dirty', () => {
+  const store = createStore({ seeds, storage: fakeStorage() });
+  store.setActiveTab('pi');
+  assert.equal(store.isDirty(), false);
+});
+
 test('reset returns palette and all three theme docs to vendored seeds', () => {
   const storage = fakeStorage();
   const store = createStore({ seeds, storage });

@@ -115,13 +115,25 @@ const VALIDATORS = {
     if (!isObject(doc)) return 'document must be a JSON object';
     if (!isObject(doc.theme)) return 'opencode theme needs a "theme" object';
     if (doc.defs !== undefined && !isObject(doc.defs)) return '"defs" must be an object';
+    // Variant sides are leaves (hex or ref string, or an int) — opencode's own
+    // type requires both sides and forbids nesting, and a nested variant would
+    // recurse unboundedly through the contract checker.
+    const isLeaf = (v) => Number.isInteger(v) || typeof v === 'string';
     for (const [token, value] of Object.entries(doc.theme)) {
       if (token === 'thinkingOpacity') {
         if (typeof value !== 'number') return 'thinkingOpacity must be a number';
         continue;
       }
-      const isVariant = isObject(value) && ('dark' in value || 'light' in value);
-      if (!Number.isInteger(value) && typeof value !== 'string' && !isVariant) {
+      if (isObject(value)) {
+        if (!('dark' in value) || !('light' in value)) {
+          return `theme.${token} variant must carry both "dark" and "light"`;
+        }
+        if (!isLeaf(value.dark) || !isLeaf(value.light)) {
+          return `theme.${token} variant sides must be plain values, not nested objects`;
+        }
+        continue;
+      }
+      if (!Number.isInteger(value) && typeof value !== 'string') {
         return `theme.${token} must be an int, string, or {dark, light} object`;
       }
     }

@@ -5,7 +5,12 @@
 import { el } from './common.js';
 
 export function buildOpencodeMock() {
-  return el('div', { cls: 'mock-terminal', bg: 'background' }, [
+  // The root paints the terminal background (R17); the inner surface carries
+  // the theme's own `background` token — the seed resolves it to transparent
+  // (real opencode keeps terminal transparency), which must reveal the
+  // terminal bg beneath, never the page chrome.
+  return el('div', { cls: 'mock-terminal' }, [
+    el('div', { cls: 'mock-surface', bg: 'background' }, [
     el('p', { cls: 'mock-line' }, [
       el('span', { fg: 'primary', text: '■ opencode ' }),
       el('span', { fg: 'textMuted', text: 'v1 · ' }),
@@ -90,6 +95,7 @@ export function buildOpencodeMock() {
       el('span', { fg: 'warning', text: '⚠ 1 ' }),
       el('span', { fg: 'error', text: '✗ 0 ' }),
       el('span', { cls: 'mock-selected', bg: 'primary', fg: 'selectedListItemText', text: ' selected item ' }),
+    ]),
     ]),
   ]);
 }

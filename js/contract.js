@@ -87,7 +87,10 @@ const RULES = {
             return false; // reference; hex-in-defs is caught by the defs rule below
           }
           if (value && typeof value === 'object') {
-            return violatesLeaf(value.dark) || violatesLeaf(value.light);
+            // Check only the sides that exist; the validator enforces both
+            // sides present and leaf-only, so recursion stays one level deep.
+            return ('dark' in value && violatesLeaf(value.dark))
+              || ('light' in value && violatesLeaf(value.light));
           }
           return true;
         };

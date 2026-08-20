@@ -119,11 +119,15 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  const alert = document.createElement('p');
-  alert.setAttribute('role', 'alert');
-  alert.style.cssText = 'color:var(--flag-fg);padding:1rem';
-  alert.textContent = `Failed to start: ${error.message}`;
-  document.body.append(alert);
-  console.error(error);
-});
+// Guarded so the module graph stays importable under node --test (the CI
+// smoke test imports every module; only a browser runs the app).
+if (typeof document !== 'undefined') {
+  main().catch((error) => {
+    const alert = document.createElement('p');
+    alert.setAttribute('role', 'alert');
+    alert.style.cssText = 'color:var(--flag-fg);padding:1rem';
+    alert.textContent = `Failed to start: ${error.message}`;
+    document.body.append(alert);
+    console.error(error);
+  });
+}

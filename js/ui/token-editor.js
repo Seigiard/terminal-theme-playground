@@ -21,6 +21,17 @@ import { computeCollisions } from '../store.js';
 
 const SCHEMAS = { claude: CLAUDE_SCHEMA, opencode: OPENCODE_SCHEMA, pi: PI_SCHEMA };
 
+// The "= bg" flag exists to catch TEXT that disappears into the background.
+// Background-purpose tokens legitimately equal the background color (pi's
+// userMessageBg is contract-required to), so they never carry the flag.
+const isBackgroundToken = (tool, key) => {
+  if (tool === 'pi') return /Bg$/.test(key);
+  if (tool === 'claude') {
+    return /background/i.test(key) || key === 'selectionBg' || key.startsWith('rate_limit_');
+  }
+  return /^background/.test(key) || /Bg$/.test(key);
+};
+
 // Extra args are ignored by the two-arg resolvers, so direct references work.
 const RESOLVERS = { pi: resolvePi, claude: resolveClaude, opencode: resolveOpencode };
 
@@ -336,11 +347,11 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
           row.append(flag);
         }
 
-        // collision flag: token resolves to the background color (R4)
+        // collision flag: a non-background token resolves to the background color (R4)
         const resolvedColor = resolved[key];
-        if (typeof resolvedColor === 'string'
-          && resolvedColor.toLowerCase() === palette.background.toLowerCase()
-          && collisions.background === resolvedColor.toLowerCase()) {
+        if (!isBackgroundToken(tool, key)
+          && typeof resolvedColor === 'string'
+          && resolvedColor.toLowerCase() === collisions.background) {
           const flag = document.createElement('span');
           flag.className = 'badge collision-badge';
           flag.textContent = '= bg';
@@ -366,9 +377,10 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
     }
   };
 
-  // Inactive tabs are display:none, so their rebuild is deferred: render only
-  // while this tool's tab is active. Tab activation notifies subscribers,
-  // which triggers the catch-up render.
+  // Every tool renders once on mount (the line after onState forces it even
+  // for inactive tabs — the JSON view and row ids for click-to-token need to
+  // exist). After that, re-renders run only while this tool's tab is active;
+  // tab activation notifies subscribers, which triggers the catch-up render.
   const onState = (state) => {
     if (state.activeTab === tool) render(state);
   };

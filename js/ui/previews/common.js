@@ -22,13 +22,22 @@ export function el(tag, props = {}, children = []) {
 }
 
 // Applies resolver output as --t-<token> variables on the preview root.
-// Values are plain CSS colors; missing tokens fall back to inherit.
+// Stale variables from a previous doc are cleared first, so a doc with fewer
+// tokens never keeps painting the old theme's colors.
+const appliedTokens = new WeakMap();
+
 export function skinPreview(root, colors, palette) {
   root.style.setProperty('--t-terminal-bg', palette.background);
   root.style.setProperty('--t-terminal-fg', palette.foreground);
+  const previous = appliedTokens.get(root) ?? new Set();
+  const current = new Set(Object.keys(colors));
+  for (const token of previous) {
+    if (!current.has(token)) root.style.removeProperty(`--t-${token}`);
+  }
   for (const [token, color] of Object.entries(colors)) {
     root.style.setProperty(`--t-${token}`, color);
   }
+  appliedTokens.set(root, current);
 }
 
 // Click on any [data-uses] surface navigates to its first token and flashes

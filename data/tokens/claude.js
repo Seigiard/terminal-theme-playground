@@ -109,10 +109,6 @@ export const SCHEMA = [
 
 export const ALL_KEYS = SCHEMA.flatMap((g) => g.keys.map((k) => k.key));
 
-export const HINTS = Object.fromEntries(
-  SCHEMA.flatMap((g) => g.keys.map((k) => [k.key, k.hint])),
-);
-
 // Base themes, values kept as ansi:<name> slot references (never baked hex).
 export const BASES = {
   'light-ansi': {

@@ -3,6 +3,9 @@
 // fake. Seeds are injected so Node tests can read them from disk while the
 // browser fetches them.
 
+import { assertPalette } from './resolvers/xterm.js';
+import { validateThemeDoc } from './edits.js';
+
 export const STORAGE_KEY = 'terminal-theme-playground/v1';
 
 const clone = (value) => structuredClone(value);
@@ -42,6 +45,12 @@ export function createStore({ seeds, storage }) {
       if (!raw) return seedState();
       const parsed = JSON.parse(raw);
       if (!parsed || !parsed.palette || !parsed.themes) return seedState();
+      // Valid JSON with a drifted shape (schema change, another same-origin
+      // writer) must fall back too, or startup crash-loops on the bad key.
+      assertPalette(parsed.palette);
+      for (const tool of ['pi', 'claude', 'opencode']) {
+        if (!validateThemeDoc(tool, parsed.themes[tool]).ok) return seedState();
+      }
       return { ...seedState(), ...parsed };
     } catch {
       return seedState();
@@ -61,7 +70,14 @@ export function createStore({ seeds, storage }) {
 
   const notify = () => {
     persist();
-    listeners.forEach((listener) => listener(state));
+    listeners.forEach((listener) => {
+      try {
+        listener(state);
+      } catch (error) {
+        // One throwing subscriber must not freeze the others or the app.
+        console.error('store subscriber failed', error);
+      }
+    });
   };
 
   const mutate = (fn, { markDirty = true } = {}) => {

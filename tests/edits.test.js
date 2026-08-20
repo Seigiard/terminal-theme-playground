@@ -94,6 +94,27 @@ test('invalid JSON structure is rejected whole with an error', () => {
   assert.ok(validateThemeDoc('pi', { name: 't' }).error.length > 0);
 });
 
+test('pi: a default-kind edit on a var-backed token blanks only that token', () => {
+  const doc = setPiToken(structuredClone(piSeed), 'muted', { kind: 'default' });
+  assert.equal(doc.colors.muted, '');
+  assert.equal(doc.vars.mutedText, 8); // the shared var and its referents stay
+  assert.equal(doc.colors.thinkingText, 'mutedText');
+});
+
+test('opencode: one-sided and nested variants are rejected with precise errors', () => {
+  const oneSided = structuredClone(opencodeSeed);
+  oneSided.theme.primary = { dark: 2 };
+  const r1 = validateThemeDoc('opencode', oneSided);
+  assert.equal(r1.ok, false);
+  assert.match(r1.error, /both "dark" and "light"/);
+
+  const nested = structuredClone(opencodeSeed);
+  nested.theme.primary = { dark: { dark: 2, light: 3 }, light: 4 };
+  const r2 = validateThemeDoc('opencode', nested);
+  assert.equal(r2.ok, false);
+  assert.match(r2.error, /nested/);
+});
+
 test('valid docs pass validation, including out-of-select values (R9)', () => {
   assert.equal(validateThemeDoc('pi', piSeed).ok, true);
   assert.equal(validateThemeDoc('claude', claudeSeed).ok, true);
