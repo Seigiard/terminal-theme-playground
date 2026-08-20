@@ -1,15 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import { checkContract } from '../js/contract.js';
-
-const readJson = (path) =>
-  JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
-
-const piSeed = readJson('../data/seeds/pi.json');
-const claudeSeed = readJson('../data/seeds/claude.json');
-const opencodeSeed = readJson('../data/seeds/opencode.json');
+import { piSeed, claudeSeed, opencodeSeed } from './helpers.js';
 
 // Rules mirror the bats assertions in my-mac-setup tests/scripts.bats
 // ("Pi terminal theme uses only terminal palette colors",

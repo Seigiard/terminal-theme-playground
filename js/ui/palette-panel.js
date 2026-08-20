@@ -3,13 +3,7 @@
 // step — reset destroys all edits, R5).
 
 import { computeCollisions } from '../store.js';
-
-const SLOT_NAMES = [
-  'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
-  'br-black', 'br-red', 'br-green', 'br-yellow', 'br-blue', 'br-magenta', 'br-cyan', 'br-white',
-];
-
-const HEX = /^#[0-9a-f]{6}$/i;
+import { SLOT_NAMES, normalizeHexInput } from './shared.js';
 
 export function renderPalettePanel(container, store, { presets }) {
   container.innerHTML = '';
@@ -58,8 +52,8 @@ export function renderPalettePanel(container, store, { presets }) {
 
     swatch.addEventListener('input', () => store.setPaletteColor(key, swatch.value));
     hexInput.addEventListener('change', () => {
-      const value = hexInput.value.trim().toLowerCase();
-      if (HEX.test(value)) {
+      const value = normalizeHexInput(hexInput.value);
+      if (value) {
         hexInput.classList.remove('invalid');
         store.setPaletteColor(key, value);
       } else {

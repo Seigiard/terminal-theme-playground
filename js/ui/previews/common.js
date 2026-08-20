@@ -7,7 +7,7 @@
 // actual color arrives via the CSS variable the skin sets.
 export function el(tag, props = {}, children = []) {
   const node = document.createElement(tag);
-  const { cls, text, uses, fg, bg, border, mono, ...rest } = props;
+  const { cls, text, uses, fg, bg, border, ...rest } = props;
   if (cls) node.className = cls;
   if (text !== undefined) node.textContent = text;
   const used = new Set(uses ?? []);

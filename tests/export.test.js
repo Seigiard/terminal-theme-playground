@@ -1,16 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import { serializeTheme } from '../js/export.js';
 import { setClaudeToken } from '../js/edits.js';
-
-const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const readJson = (path) => JSON.parse(read(path));
-
-const piSeed = readJson('../data/seeds/pi.json');
-const claudeSeed = readJson('../data/seeds/claude.json');
-const opencodeSeed = readJson('../data/seeds/opencode.json');
+import { read, piSeed, claudeSeed, opencodeSeed } from './helpers.js';
 
 test('export of the untouched pi seed byte-matches the vendored file', () => {
   assert.equal(serializeTheme('pi', piSeed), read('../data/seeds/pi.json'));

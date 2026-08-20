@@ -5,7 +5,7 @@
 
 import { ANSI_SLOTS } from '../data/tokens/claude.js';
 
-const SLOT_TO_ANSI = Object.fromEntries(
+export const SLOT_TO_ANSI = Object.fromEntries(
   Object.entries(ANSI_SLOTS).map(([name, slot]) => [slot, name]),
 );
 

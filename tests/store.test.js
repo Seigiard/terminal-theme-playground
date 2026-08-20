@@ -1,23 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import { createStore, computeCollisions, STORAGE_KEY } from '../js/store.js';
-
-const readJson = (path) =>
-  JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
+import { alabaster, flexoki, piSeed, claudeSeed, opencodeSeed } from './helpers.js';
 
 const seeds = {
-  palettes: {
-    alabaster: readJson('../data/palettes/alabaster.json'),
-    'flexoki-light': readJson('../data/palettes/flexoki-light.json'),
-  },
+  palettes: { alabaster, 'flexoki-light': flexoki },
   defaultPalette: 'alabaster',
-  themes: {
-    pi: readJson('../data/seeds/pi.json'),
-    claude: readJson('../data/seeds/claude.json'),
-    opencode: readJson('../data/seeds/opencode.json'),
-  },
+  themes: { pi: piSeed, claude: claudeSeed, opencode: opencodeSeed },
 };
 
 const fakeStorage = (initial = {}) => {

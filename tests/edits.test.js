@@ -1,6 +1,5 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import {
   setPiToken, detachPiToken, piSiblings,
@@ -8,13 +7,7 @@ import {
   setOpencodeToken,
   validateThemeDoc,
 } from '../js/edits.js';
-
-const readJson = (path) =>
-  JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
-
-const piSeed = readJson('../data/seeds/pi.json');
-const claudeSeed = readJson('../data/seeds/claude.json');
-const opencodeSeed = readJson('../data/seeds/opencode.json');
+import { piSeed, claudeSeed, opencodeSeed } from './helpers.js';
 
 // #region pi var coupling (R11)
 

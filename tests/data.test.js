@@ -1,19 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import * as claudeTokens from '../data/tokens/claude.js';
 import * as opencodeTokens from '../data/tokens/opencode.js';
 import * as piTokens from '../data/tokens/pi.js';
-
-const readJson = (path) =>
-  JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
-
-const alabaster = readJson('../data/palettes/alabaster.json');
-const flexoki = readJson('../data/palettes/flexoki-light.json');
-const piSeed = readJson('../data/seeds/pi.json');
-const claudeSeed = readJson('../data/seeds/claude.json');
-const opencodeSeed = readJson('../data/seeds/opencode.json');
+import { alabaster, flexoki, piSeed, claudeSeed, opencodeSeed } from './helpers.js';
 
 const HEX = /^#[0-9a-f]{6}$/;
 

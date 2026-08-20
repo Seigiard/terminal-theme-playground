@@ -10,29 +10,19 @@ import {
   setClaudeToken, clearClaudeOverride,
   setOpencodeToken,
   validateThemeDoc,
+  SLOT_TO_ANSI,
 } from '../edits.js';
+import { SLOT_NAMES, normalizeHexInput } from './shared.js';
 import { checkContract } from '../contract.js';
 import { resolvePi } from '../resolvers/pi.js';
 import { resolveClaude } from '../resolvers/claude.js';
 import { resolveOpencode } from '../resolvers/opencode.js';
 import { computeCollisions } from '../store.js';
 
-const SLOT_NAMES = [
-  'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
-  'br-black', 'br-red', 'br-green', 'br-yellow', 'br-blue', 'br-magenta', 'br-cyan', 'br-white',
-];
-
-const SLOT_TO_ANSI = Object.fromEntries(
-  Object.entries(ANSI_SLOTS).map(([name, slot]) => [slot, name]),
-);
-
 const SCHEMAS = { claude: CLAUDE_SCHEMA, opencode: OPENCODE_SCHEMA, pi: PI_SCHEMA };
 
-const RESOLVERS = {
-  pi: (doc, palette) => resolvePi(doc, palette),
-  claude: (doc, palette) => resolveClaude(doc, palette),
-  opencode: (doc, palette, mode) => resolveOpencode(doc, palette, mode),
-};
+// Extra args are ignored by the two-arg resolvers, so direct references work.
+const RESOLVERS = { pi: resolvePi, claude: resolveClaude, opencode: resolveOpencode };
 
 // Classifies a token's current raw value into an editor control state.
 function classifyValue(tool, doc, token) {
@@ -57,6 +47,8 @@ function classifyValue(tool, doc, token) {
 
   if (tool === 'claude') {
     const isOverride = token in (doc.overrides ?? {});
+    // Lenient on purpose: an unknown base still displays (as light-ansi) so
+    // the user can fix it; resolveClaude stays strict and throws instead.
     const raw = (doc.overrides ?? {})[token] ?? (BASES[doc.base] ?? BASES['light-ansi'])[token];
     const base = { isOverride };
     if (typeof raw === 'string' && raw.startsWith('ansi:') && raw.slice(5) in ANSI_SLOTS) {
@@ -222,8 +214,8 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
               hexInput.placeholder = '#rrggbb';
               hexInput.className = 'hex-input';
               hexInput.addEventListener('change', () => {
-                const value = hexInput.value.trim().toLowerCase();
-                if (/^#[0-9a-f]{6}$/.test(value)) {
+                const value = normalizeHexInput(hexInput.value);
+                if (value) {
                   noteVariantCollapse(info, key);
                   applyEdit(store, tool, key, { kind: 'hex', hex: value });
                 }
@@ -273,10 +265,8 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
           hexInput.id = `hex-${tool}-${key}`;
           hexInput.value = info.hex;
           hexInput.addEventListener('change', () => {
-            const value = hexInput.value.trim().toLowerCase();
-            if (/^#[0-9a-f]{6}$/.test(value)) {
-              applyEdit(store, tool, key, { kind: 'hex', hex: value });
-            }
+            const value = normalizeHexInput(hexInput.value);
+            if (value) applyEdit(store, tool, key, { kind: 'hex', hex: value });
           });
           control.append(select, hexInput);
         } else {
@@ -376,16 +366,29 @@ export function renderTokenEditor(editorEl, jsonEl, store, tool) {
     }
   };
 
-  store.subscribe(render);
-  render(store.getState());
+  // Inactive tabs are display:none, so their rebuild is deferred: render only
+  // while this tool's tab is active. Tab activation notifies subscribers,
+  // which triggers the catch-up render.
+  const onState = (state) => {
+    if (state.activeTab === tool) render(state);
+  };
+  store.subscribe(onState);
+  onState(store.getState());
+  if (store.getState().activeTab !== tool) render(store.getState());
+
+  const flashToken = (token) => {
+    const row = document.getElementById(`row-${tool}-${token}`);
+    if (!row) return null;
+    row.classList.add('flash');
+    setTimeout(() => row.classList.remove('flash'), 1600);
+    return row;
+  };
 
   return {
+    flashToken,
     focusToken(token) {
-      const row = document.getElementById(`row-${tool}-${token}`);
-      if (!row) return;
-      row.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      row.classList.add('flash');
-      setTimeout(() => row.classList.remove('flash'), 1600);
+      const row = flashToken(token);
+      row?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     },
   };
 }

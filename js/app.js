@@ -102,12 +102,7 @@ async function main() {
     container.append(mock);
     wireClicks(mock, (tokens) => {
       editors[tool].focusToken(tokens[0]);
-      tokens.slice(1).forEach((token) => {
-        document.getElementById(`row-${tool}-${token}`)?.classList.add('flash');
-        setTimeout(() => {
-          document.getElementById(`row-${tool}-${token}`)?.classList.remove('flash');
-        }, 1600);
-      });
+      tokens.slice(1).forEach((token) => editors[tool].flashToken(token));
     });
 
     const reskin = (state) => {
@@ -127,7 +122,7 @@ async function main() {
 main().catch((error) => {
   const alert = document.createElement('p');
   alert.setAttribute('role', 'alert');
-  alert.style.cssText = 'color:#a02020;padding:1rem';
+  alert.style.cssText = 'color:var(--flag-fg);padding:1rem';
   alert.textContent = `Failed to start: ${error.message}`;
   document.body.append(alert);
   console.error(error);

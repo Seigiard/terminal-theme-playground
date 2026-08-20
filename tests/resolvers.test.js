@@ -1,6 +1,5 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import { xterm256ToHex } from '../js/resolvers/xterm.js';
 import { resolvePi } from '../js/resolvers/pi.js';
@@ -8,14 +7,7 @@ import { resolveClaude } from '../js/resolvers/claude.js';
 import { resolveOpencode } from '../js/resolvers/opencode.js';
 import { ALL_KEYS as CLAUDE_KEYS } from '../data/tokens/claude.js';
 import { ALL_KEYS as OPENCODE_KEYS } from '../data/tokens/opencode.js';
-
-const readJson = (path) =>
-  JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
-
-const palette = readJson('../data/palettes/alabaster.json');
-const piSeed = readJson('../data/seeds/pi.json');
-const claudeSeed = readJson('../data/seeds/claude.json');
-const opencodeSeed = readJson('../data/seeds/opencode.json');
+import { alabaster as palette, piSeed, claudeSeed, opencodeSeed } from './helpers.js';
 
 // #region xterm 256-color helpers
 

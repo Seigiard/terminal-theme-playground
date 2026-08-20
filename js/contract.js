@@ -8,7 +8,7 @@
 
 const isSlotIndex = (v) => Number.isInteger(v) && v >= 0 && v <= 15;
 
-export const RULES = {
+const RULES = {
   pi: [
     {
       id: 'pi-vars-slot-index',
