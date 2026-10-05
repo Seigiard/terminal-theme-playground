@@ -3,6 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "lint": "oxlint ."
+  },
+  "devDependencies": {
+    "@oxlint/plugins": "1.87.0",
+    "oxlint": "1.87.0"
   }
 }

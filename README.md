@@ -93,9 +93,12 @@ the side-by-side pass against the real tools has not been run yet.
 
 ## Development
 
-No build, no dependencies. Plain ES modules and JSON.
+No build or runtime dependencies. Plain ES modules and JSON. Oxlint and its
+plugin support package are development-only dependencies.
 
 ```bash
+npm ci                    # install lint tooling
+npm run lint              # anti-slop checks for owned sources and tests
 node --test               # unit tests (data shape, resolvers, contract, edits, export)
 python3 -m http.server    # serve locally, open http://localhost:8000
 ```

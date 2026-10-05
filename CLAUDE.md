@@ -23,9 +23,8 @@ find by looking at the repo.
 - `data/seeds/*.json` must stay **byte-exact**: `tests/export.test.js` asserts
   the untouched pi seed byte-matches its file (2-space indent, source key
   order, trailing newline). Running a formatter over `data/` breaks the suite.
-- Zero dependencies is a settled decision, not an omission: plain ES modules,
-  no bundler, `node --test` only. Adding a package or build step reverses a
-  user-approved decision — surface it instead.
+- Runtime code uses plain ES modules with zero runtime dependencies and no bundler.
+  Oxlint and `@oxlint/plugins` are development-only dependencies for anti-slop checks.
 - Run tests as `node --test` from the repo root. The form `node --test tests/`
   fails on current Node (directory arg resolves as a module).
 - The stored-state key `terminal-theme-playground/v1` is schema-versioned:
@@ -37,5 +36,5 @@ find by looking at the repo.
 - Every push to `main` deploys to **production**: GitHub Pages, workflow
   source, served at https://seigiard.com/terminal-theme-playground/ (custom
   domain on the Seigiard account — not github.io). There is no staging; the
-  test job in `.github/workflows/deploy.yml` is the only gate.
-- Commits go directly to `main`; this repo has no PR flow.
+  test job in `.github/workflows/deploy.yml` gates deployment. Lint also runs on pull requests.
+- Publish changes through pull requests. Merge to `main` deploys the site.
